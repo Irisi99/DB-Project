@@ -99,12 +99,12 @@ def hash_join():
     h = defaultdict(list)
     for s in friendOf_gen:
         # add friends.Subject as index into the hash table
-        h[s[1]].append(s[0])
+        h[s[0]].append(s[1])
 
     # match with friendOf.Subject
     # add friendOf.Object to the result
     temp_gen = generator([[r[0], r[1], s]
-                         for r in follows_gen for s in h[r[0]]])
+                         for r in follows_gen for s in h[r[1]]])
 
     h = defaultdict(list)
     for s in likes_gen:

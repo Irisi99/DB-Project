@@ -123,7 +123,7 @@ def partition_and_merge(table1, index1, table2, index2, final):
 
 
 def partition_merge_join():
-    temp = partition_and_merge(follows_table, 0, friendOf_table, 1, False)
+    temp = partition_and_merge(follows_table, 1, friendOf_table, 0, False)
     temp = partition_and_merge(temp, 2, likes_table, 0, False)
     partition_and_merge(temp, 3, hasReview_table, 0, True)
 

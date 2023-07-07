@@ -153,11 +153,11 @@ def merge(table1, index1, table2, index2, final):
 
 def sort_merge_join():
     # sort follows based on Object
-    sorted_follows = sorted(follows_table, key=itemgetter(0))
+    sorted_follows = sorted(follows_table, key=itemgetter(1))
     # sort friendOf based on Subject
-    sorted_friendOf = sorted(friendOf_table, key=itemgetter(1))
+    sorted_friendOf = sorted(friendOf_table, key=itemgetter(0))
     # merge two tables
-    temp = merge(sorted_follows, 0, sorted_friendOf, 1, False)
+    temp = merge(sorted_follows, 1, sorted_friendOf, 0, False)
     del sorted_follows
     del sorted_friendOf
     gc.collect()
