@@ -1,7 +1,6 @@
 import sys
 import gc
 import time
-from collections import defaultdict
 from operator import itemgetter
 from Parallel import *
 
@@ -16,9 +15,9 @@ if len(sys.argv) == 2:
         tuples_file = '10M_int.txt'
         result_file = 'result_sortMerge_10M'
 
-# index 0 : object
+# index 0 : subject
 # index 1 : type/relationship
-# index 2 : subject
+# index 2 : object
 tuples = []
 # Index of string is its respective int
 dictionary = [0]
@@ -51,9 +50,6 @@ with open(tuples_file, 'r') as f:
         line = f.readline()
     f.close()
 
-# if tuples_file == '10M_int.txt':
-#     tuples = tuples[0:int(len(tuples)/3)]
-
 # Assume we have N different types
 N = len(tuples)
 # index x is table with type x based on dictionary
@@ -66,7 +62,7 @@ for tuple in tuples:
         # if table does not exist yet create it with one element
         tables[index] = [[int(tuple[0]), int(tuple[2])]]
     else:
-        # if table exist add the new row with object and subject
+        # if table exist add the new row with subject and object
         tables[index].append([int(tuple[0]), int(tuple[2])])
 
 # find indexes of the tables we will be using
@@ -87,6 +83,7 @@ def merge(table1, index1, table2, index2, final):
 
     if final:
         global length
+        # open result file as write
         with open(result_file, 'w') as f:
             while outer_i < len(table1) and inner_i < len(table2):
                 temp = inner_i
@@ -98,11 +95,11 @@ def merge(table1, index1, table2, index2, final):
                 if table1[outer_i][index1] < table2[temp][index2]:
                     outer_i += 1
                     continue
-                # if the key matches then
+                # if the key matches then write the row to the result file
                 while table1[outer_i][index1] == table2[temp][index2]:
                     length += 1
                     f.write(
-                        f"{table1[outer_i][0]} {table1[outer_i][1]} {table1[outer_i][2]} {table1[outer_i][3]} {table2[temp][1-index2]} \n")
+                        f"{dictionary[table1[outer_i][0]]} {dictionary[table1[outer_i][1]]} {dictionary[table1[outer_i][2]]} {dictionary[table1[outer_i][3]]} {dictionary[table2[temp][1-index2]]}\n")
                     # advance in table 2
                     temp += 1
                     # if we reached the end then break out of the loop
@@ -164,7 +161,7 @@ def sort_merge_join():
 
     # sort based on firendOf.Object
     sorted_temp = sorted(temp, key=itemgetter(2))
-    # sort based on likes.Object
+    # sort based on likes.Subject
     sorted_likes = sorted(likes_table, key=itemgetter((0)))
     # merge with likes table
     temp = merge(sorted_temp, 2, sorted_likes, 0, False)
@@ -172,9 +169,9 @@ def sort_merge_join():
     del sorted_likes
     gc.collect()
 
-    # sort based on likes.Subject
+    # sort based on likes.Object
     sorted_temp = sorted(temp, key=itemgetter(3))
-    # sort based on hasReview.Object
+    # sort based on hasReview.Subject
     sorted_hasReview = sorted(hasReview_table, key=itemgetter(0))
     # merge with hasReview table
     merge(sorted_temp, 3, sorted_hasReview, 0, True)
